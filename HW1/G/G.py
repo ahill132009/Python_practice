@@ -1,3 +1,2 @@
 def solution(a, b):
-    ### YOUR CODE ###
-    return
+    return sorted(a + [x for x in b if x in (set(b) - set(a))])
