@@ -8,7 +8,5 @@ class OneIndexedList:
 		else:
 			return self.items[idx-1]
 
-
-o = OneIndexedList()
-o.items.append(1)
-print(o[1])
+	def __setitem__(self, key, value):
+		self.items[key-1] = value

@@ -5,6 +5,8 @@ class FileReader:
 
 	def __init__(self, path):
 		self.path = path
+		self.word_count = 0
+		self.line_count = 0
 
 	def read(self):
 		try: 
@@ -14,33 +16,21 @@ class FileReader:
 
 	def write(self, text):
 		self.text = text
-		f = open(self.path, 'r+')
-		f.write(self.text)
-		f.close
+		with open(self.path, 'r+') as f:
+			f.write(self.text)
 		return 'Text was successfully written'
 
 	def count(self):
-		word_count = 0
-		line_count = 0
-		file_contents = open(self.path, 'r').read()
-		word_count += len(word_tokenize(file_contents))
-		line_count = len(file_contents.splitlines())
-		return f'Number of lines is {line_count}\nNumber of words is {word_count}'
+		with open(self.path, 'r') as f:
+			file_contents = f.read()
+			self.word_count = len(word_tokenize(file_contents))
+			self.line_count = len(file_contents.splitlines())
+		return f'Number of lines is {self.line_count}\nNumber of words is {self.word_count}'
 
 	def __add__(self, other):
-		self_dir_path = ''.join(os.path.split(self.path)[:-1])
-		other_dir_path = ''.join(os.path.split(other.path)[:-1])
-		file1 = open(self.path, 'r').read()
-		file2 = open(other.path, 'r').read()
-		new_file_address = self_dir_path + '/concatenated_file.txt'
-		resulted_file = open(new_file_address, 'w+')
-		resulted_file.write(file1)
-		resulted_file.write('\n')
-		resulted_file.write(file2)
-		resulted_file.close()
-		return f"Texts from {self.path} and {other.path} were written in {new_file_address}"
+		with open(self.path) as f1, open(other.path) as f2, open('./concatenated_file.txt', 'w+') as new_file:
+			new_file.write(f'{f1.read()}\n{f2.read()}')
+			return FileReader('./concatenated_file.txt')
 
 	def __str__(self):
-		# Prints file path 
 		return f"Path to file is {''.join(os.path.split(self.path)[:-1])}"
-
