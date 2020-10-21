@@ -5,8 +5,6 @@ class FileReader:
 
 	def __init__(self, path):
 		self.path = path
-		self.word_count = 0
-		self.line_count = 0
 
 	def read(self):
 		try: 
@@ -21,10 +19,12 @@ class FileReader:
 		return 'Text was successfully written'
 
 	def count(self):
+		self.line_count = 0
+		self.word_count = 0
 		with open(self.path, 'r') as f:
-			file_contents = f.read()
-			self.word_count = len(word_tokenize(file_contents))
-			self.line_count = len(file_contents.splitlines())
+			for line in f:
+				self.line_count += 1
+				self.word_count += len(word_tokenize(line))
 		return f'Number of lines is {self.line_count}\nNumber of words is {self.word_count}'
 
 	def __add__(self, other):
