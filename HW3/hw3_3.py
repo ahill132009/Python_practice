@@ -55,8 +55,13 @@ class UnigramMorphAnalyzer:
 		self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, shuffle=False)
 		return self.X_train, self.X_test, self.y_train, self.y_test
 
-	def train(self):
-		for word_train, pos_train in zip(self.X_train, self.y_train):
+	def train(self, x=None, y=None):
+		x = x or self.X_train
+		y = y or self.y_train
+		assert isinstance(x, (list, pd.Series)) and isinstance(y, (tuple, pd.Series)), \
+		'x and y must be list or Panda Series object'
+
+		for word_train, pos_train in zip(x, y):
 			ending = word_train[-4:] if len(word_train) >= 4 else word_train
 			if self.stopwords.get(ending) is not None:
 				self.ending_stats[ending] = self.stopwords[ending]
@@ -91,12 +96,18 @@ class UnigramMorphAnalyzer:
 			else:
 				return self._distrib(pred)
 	
-	def eval(self, method):
+	def eval(self, method, x=None, y_pred=None):
+		# Can take user's lists or class corpora as parameter  
+		x = x or self.X_test
+		y_pred = y_pred or self.y_test
+		assert isinstance(x, (list, pd.Series)) and isinstance(y_pred, (list, pd.Series)), \
+		'x and y must be list or Panda Series object'
 		assert method in ['argmax', 'distrib']
+
 		correct, total = 0, 0
-		for word, pos_true in zip(self.X_test, self.y_test):
+		for word, pos_pred in zip(x, y_pred):
 			pred = self.predict(word, method=method)
-			if pred == pos_true:
+			if pred == pos_pred:
 				correct += 1
 			total += 1
 		return correct / total
@@ -111,9 +122,14 @@ class UnigramMorphAnalyzer:
 			self.loaded_pickle = pickle.load(p)
 		print(f'{pickle_name} is successfully loaded')
 
+# if __name__ ==' __main__':
+# 	make_csv
 
-
-
+# ex = UnigramMorphAnalyzer('./annot.opcorpora.xml.byfile.zip')
+# ex.split_corpora()
+# ex.train()
+# # print(ex.eval('argmax', x=['принский'], y=['NOUN']))
+# print(ex.eval('argmax'))
 
 
 
