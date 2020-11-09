@@ -17,4 +17,13 @@ class MinStack:
         
 
     def getMin(self) -> int:
-        return sorted(self.stack)[0]
+        min_val = []
+        for val in self.stack:
+            if not min_val:
+                min_val.append(val)
+            else:
+                if val < min_val[0]:
+                	min_val.pop() 
+                	min_val.append(val) 
+        return min_val[0]
+
